@@ -31,14 +31,3 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
-    - name: Python Package Using Poetry
-      run: |
-        poetry build
-        # Only publish if the commit is tagged
-        if [ -n "${GITHUB_REF##refs/tags/*}" ]; then
-          echo "This is not a tag, skipping deployment"
-          exit 0
-        fi
-        poetry publish --username ${{ secrets.TEST_PYPI_USERNAME }} --password ${{ secrets.TEST_PYPI_PASSWORD }} --repository testpypi
-
-    
