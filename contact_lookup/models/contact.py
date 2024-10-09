@@ -29,6 +29,22 @@ class Contact:
         )
         self.nickname = self.nickname.strip() if self.nickname is not None else None
 
+    def __eq__(self, other):
+        if not isinstance(other, Contact):
+            return False
+
+        return (
+            self.first_name == other.first_name
+            and self.last_name == other.last_name
+            and self.other_names == other.other_names
+            and self.company == other.company
+            and self.title == other.title
+            and self.nickname == other.nickname
+            and self.phone_numbers == other.phone_numbers
+            and self.addresses == other.addresses
+            and self.emails == other.emails
+        )
+
     def add_phone_number(self, phone_number: PhoneNumber):
         self.phone_numbers.append(phone_number)
 

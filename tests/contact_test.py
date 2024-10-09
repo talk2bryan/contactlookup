@@ -45,7 +45,6 @@ def test_add_phone_number():
 
 
 def test_add_address():
-    from contact_lookup.models.contact import Contact
 
     contact = Contact("John", "Doe", None, "ACME", "CEO")
     address = Address("123 Main St", "Anytown", "AnyState", "12345", 1, "work", "USA")
@@ -56,7 +55,6 @@ def test_add_address():
 
 
 def test_add_email():
-    from contact_lookup.models.contact import Contact
 
     contact = Contact("John", "Doe", None, "ACME", "CEO")
     contact.id = 1
@@ -66,3 +64,22 @@ def test_add_email():
     contact.add_email(email)
 
     assert contact.emails == [email]
+
+
+def test_contact_equality():
+
+    contact1 = Contact("John", "Doe", None, "ACME", "CEO")
+    contact2 = Contact("John", "Doe", None, "ACME", "CEO")
+
+    assert contact1 == contact2
+
+    contact3 = Contact("John", "Doe", None, "ACME", "CEO")
+    contact4 = Contact("John", "Doe", "Jacob Stacks", "ACME", "CEO")
+
+    assert contact3 != contact4
+
+    # Test that the __eq__ method works with lists
+    contact_list = [contact1, contact3]
+    assert contact1 in contact_list
+    assert contact3 in contact_list
+    assert contact4 not in contact_list
