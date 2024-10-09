@@ -56,3 +56,8 @@ class Contact:
 
     def add_email(self, email: Email):
         self.emails.append(email)
+
+    def refresh(self):
+        # Run the post init method again to ensure all fields are properly
+        # formatted
+        self.__post_init__()
