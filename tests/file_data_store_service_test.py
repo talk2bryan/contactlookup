@@ -1,5 +1,6 @@
 import pytest
 
+from contact_lookup.definitions import SAMPLE_CONTACTS_DIR, SAMPLE_CONTACTS_FILE
 from contact_lookup.models.contact import Contact
 from contact_lookup.services.file_data_store_service import (
     ContactBST,
@@ -159,10 +160,10 @@ def test_contact_bst_insert_same_fname():
     assert bst.root.left.contacts == [contact5, contact4]
 
 
-@pytest.mark.datafiles("tests/data")
+@pytest.mark.datafiles(SAMPLE_CONTACTS_DIR)
 def test_file_data_store_service_load_contacts(datafiles):
     service = FileDataStoreService()
-    service.set_contacts_file_path(datafiles / "contacts.vcf")
+    service.set_contacts_file_path(datafiles / SAMPLE_CONTACTS_FILE)
 
     success = service.initialize()
     assert success is True
