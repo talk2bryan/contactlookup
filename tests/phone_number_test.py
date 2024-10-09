@@ -15,7 +15,7 @@ def phonefixture():
 def test_phone(phonefixture):
     phone = PhoneNumber(*phonefixture)
 
-    assert phone.phone_number == "5555555555"
+    assert phone.number == "5555555555"
     assert phone.type == TYPE
     assert phone.contact_id == CONTACT_ID
     assert phone.id is None
