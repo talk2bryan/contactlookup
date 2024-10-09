@@ -8,7 +8,7 @@ from contact_lookup.models.phone_number import PhoneNumber
 
 @dataclass
 class Contact:
-    id: int | None = field(init=False, default=None)
+    id: int
     first_name: str
     last_name: str
     other_names: str | None

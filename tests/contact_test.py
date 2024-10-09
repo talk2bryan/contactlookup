@@ -6,7 +6,7 @@ from contact_lookup.models.phone_number import PhoneNumber
 
 def test_new_contact_no_other_names():
 
-    contact = Contact("John", "Doe", None, "ACME", "CEO")
+    contact = Contact(1, "John", "Doe", None, "ACME", "CEO")
 
     assert contact.first_name == "John"
     assert contact.last_name == "Doe"
@@ -21,7 +21,7 @@ def test_new_contact_no_other_names():
 
 def test_new_contact_with_other_names():
 
-    contact = Contact("John", "Doe", "Jacob Stacks", "ACME", "CEO")
+    contact = Contact(1, "John", "Doe", "Jacob Stacks", "ACME", "CEO")
 
     assert contact.first_name == "John"
     assert contact.last_name == "Doe"
@@ -36,7 +36,7 @@ def test_new_contact_with_other_names():
 
 def test_add_phone_number():
 
-    contact = Contact("John", "Doe", None, "ACME", "CEO")
+    contact = Contact(1, "John", "Doe", None, "ACME", "CEO")
     phone = PhoneNumber("555-555-5555", 1, "work")
 
     contact.add_phone_number(phone)
@@ -46,7 +46,7 @@ def test_add_phone_number():
 
 def test_add_address():
 
-    contact = Contact("John", "Doe", None, "ACME", "CEO")
+    contact = Contact(1, "John", "Doe", None, "ACME", "CEO")
     address = Address("123 Main St", "Anytown", "AnyState", "12345", 1, "work", "USA")
 
     contact.add_address(address)
@@ -56,8 +56,7 @@ def test_add_address():
 
 def test_add_email():
 
-    contact = Contact("John", "Doe", None, "ACME", "CEO")
-    contact.id = 1
+    contact = Contact(1, "John", "Doe", None, "ACME", "CEO")
 
     email = Email("hello@world.org", "work", contact.id)
 
@@ -68,13 +67,13 @@ def test_add_email():
 
 def test_contact_equality():
 
-    contact1 = Contact("John", "Doe", None, "ACME", "CEO")
-    contact2 = Contact("John", "Doe", None, "ACME", "CEO")
+    contact1 = Contact(1, "John", "Doe", None, "ACME", "CEO")
+    contact2 = Contact(1, "John", "Doe", None, "ACME", "CEO")
 
     assert contact1 == contact2
 
-    contact3 = Contact("John", "Doe", None, "ACME", "CEO")
-    contact4 = Contact("John", "Doe", "Jacob Stacks", "ACME", "CEO")
+    contact3 = Contact(1, "John", "Doe", None, "ACME", "CEO")
+    contact4 = Contact(1, "John", "Doe", "Jacob Stacks", "ACME", "CEO")
 
     assert contact3 != contact4
 
