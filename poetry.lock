@@ -182,6 +182,20 @@ tomli = {version = ">=1", markers = "python_version < \"3.11\""}
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "pytest-datafiles"
+version = "3.0.0"
+description = "py.test plugin to create a 'tmp_path' containing predefined files/directories."
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-datafiles-3.0.0.tar.gz", hash = "sha256:a70c4c66a36d1cdcfc095607f04eee66eaef3fa64cbb62d60c47ce169901d1d4"},
+    {file = "pytest_datafiles-3.0.0-py2.py3-none-any.whl", hash = "sha256:2176e10d3f6e76f358925a897e21e2bcc5a0170b92fac4e66ed055eaa2ca6a22"},
+]
+
+[package.dependencies]
+pytest = ">=3.6"
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -329,4 +343,4 @@ six = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "966f4fe87dee778561ed6a9e5fbc93a0ed58e1acf9cca93534c0c1c6c22c1663"
+content-hash = "df38e64a97d954238152d46815b54ec4e9d6204cc383eb146d6eacaf90a46c3e"

@@ -1,0 +1,53 @@
+BEGIN:VCARD
+VERSION:4.0
+N:Perez;Kristen;None;;None
+FN:Kristen Perez
+TITLE:None
+TEL:+719-425-9182505
+TEL:+993-547-8840782
+ORG;TYPE=work:Crescendo Associates
+ADR;TYPE=WORK;PREF=1:;;36346 Hall Stream;Christopherstad;CA;73297;USA
+ADR;TYPE=Home;PREF=1:;;196 Purple Sage Cres;Winnipeg;MB;R3X 1V7;CA
+BDAY:1966-08-19
+NICKNAME;CHARSET=utf-8:nickname
+EMAIL:jacksonkimberly@example.net
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+N:Kaufman;Karla;None;;None
+FN:Karla Kaufman
+ORG;TYPE=work:Workerholic
+TITLE:None
+TEL:+51-882-1251128
+ADR;TYPE=HOME;PREF=1;LABEL=278 Sarah Estate;Richardsonberg;IN;20778;Israel:;;278 Sarah Estate;Richardsonberg;IN;20778;Israel
+BDAY:1980-01-07
+EMAIL:smithsteve@example.org
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+N:None;Jeff;None;;None
+FN:Jeff
+TITLE:None
+TEL:+363-214-4414254
+LANG;PREF=2:en
+ORG;TYPE=work:Viagenie
+ADR;TYPE=OTHER;PREF=1;LABEL=2360 Bean Tunnel;SouthJames;DC;96916;Montserrat:;;2360 Bean Tunnel;South James;DC;96916;Montserrat
+ADR;TYPE=WORK;PREF=2;LABEL=26767 Khan Dam;EastMarisamouth;MA;26701;Brazil:;;26767 Khan Dam;East Marisamouth;MA;26701;Brazil
+ADR;TYPE=OTHER;PREF=3;LABEL=63932 Natasha Fords;Debraview;VT;22957;Namibia:;;63932 Natasha Fords;Debraview;VT;22957;Namibia
+BDAY:1949-01-29
+EMAIL:allentaylor@example.net
+EMAIL:daniel03@example.net
+EMAIL:martinezveronica@example.net
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+N:None;Newman;Jeff;None;;None
+FN:Jeff Newman
+TITLE:None
+TEL:+1-615-555-31122
+LANG;PREF=2:en
+ORG;TYPE=work:Hollywood
+ADR;TYPE=OTHER;PREF=3;LABEL=123 Hollywood St;Beverley-Hills;CA;22957;USA:;;123 Hollywood St;Beverley-Hills;CA;22957;USA
+BDAY:1955-03-29
+EMAIL:jeffnewman@example.net
+END:VCARD

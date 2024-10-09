@@ -16,6 +16,7 @@ vobject = "^0.9.8"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
 pre-commit = "^3.8.0"
+pytest-datafiles = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core"]
