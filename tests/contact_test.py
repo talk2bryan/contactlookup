@@ -8,11 +8,11 @@ def test_new_contact_no_other_names():
 
     contact = Contact(1, "John", "Doe", None, "ACME", "CEO")
 
-    assert contact.first_name == "John"
-    assert contact.last_name == "Doe"
+    assert contact.first_name == "John".upper()
+    assert contact.last_name == "Doe".upper()
     assert contact.other_names is None
     assert contact.company == "ACME"
-    assert contact.title == "CEO"
+    assert contact.title == "CEO".upper()
     assert contact.nickname is None
     assert contact.phone_numbers == []
     assert contact.addresses == []
@@ -23,11 +23,11 @@ def test_new_contact_with_other_names():
 
     contact = Contact(1, "John", "Doe", "Jacob Stacks", "ACME", "CEO")
 
-    assert contact.first_name == "John"
-    assert contact.last_name == "Doe"
-    assert contact.other_names == "Jacob Stacks"
+    assert contact.first_name == "John".upper()
+    assert contact.last_name == "Doe".upper()
+    assert contact.other_names == "Jacob Stacks".upper()
     assert contact.company == "ACME"
-    assert contact.title == "CEO"
+    assert contact.title == "CEO".upper()
     assert contact.nickname is None
     assert contact.phone_numbers == []
     assert contact.addresses == []

@@ -9,7 +9,8 @@ class PhoneNumber:
     type: str | None = field(default=None)
 
     def __post_init__(self):
-        # Remove all spaces, dashes, and parentheses from the phone number
+        # Remove all spaces, dashes, parentheses and + from the phone number
         self.number = "".join(
-            [char for char in self.number if char.isnumeric() or char == "+"],
+            [char for char in self.number if char.isnumeric()],
         )
+        self.type = self.type.strip().upper() if self.type is not None else None

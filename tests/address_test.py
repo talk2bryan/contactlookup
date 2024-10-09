@@ -20,10 +20,10 @@ def test_address(addressfixture):
     address = Address(*addressfixture)
 
     assert address.street == STREET
-    assert address.city == CITY
-    assert address.state == STATE
+    assert address.city == CITY.upper()
+    assert address.state == STATE.upper()
     assert address.postal_code == ZIP
     assert address.contact_id == CONTACT_ID
-    assert address.type == TYPE
-    assert address.country == COUNTRY
+    assert address.type == TYPE.upper()
+    assert address.country == COUNTRY.upper()
     assert address.id is None
