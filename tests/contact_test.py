@@ -1,7 +1,7 @@
-from contact_lookup.models.address import Address
-from contact_lookup.models.contact import Contact
-from contact_lookup.models.email import Email
-from contact_lookup.models.phone_number import PhoneNumber
+from contactlookup.models.address import Address
+from contactlookup.models.contact import Contact
+from contactlookup.models.email import Email
+from contactlookup.models.phone_number import PhoneNumber
 
 
 def test_new_contact_no_other_names():

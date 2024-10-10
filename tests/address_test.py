@@ -1,6 +1,6 @@
 import pytest
 
-from contact_lookup.models.address import Address
+from contactlookup.models.address import Address
 
 STREET = "123 Main St"
 CITY = "Anytown"

@@ -1,6 +1,6 @@
 import pytest
 
-from contact_lookup.models.phone_number import PhoneNumber
+from contactlookup.models.phone_number import PhoneNumber
 
 PHONE = "555-555-5555"
 TYPE = "work"

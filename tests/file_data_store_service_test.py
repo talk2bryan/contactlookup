@@ -1,8 +1,8 @@
 import pytest
 
-from contact_lookup.definitions import SAMPLE_CONTACTS_DIR, SAMPLE_CONTACTS_FILE
-from contact_lookup.models.contact import Contact
-from contact_lookup.services.file_data_store_service import (
+from contactlookup.definitions import SAMPLE_CONTACTS_DIR, SAMPLE_CONTACTS_FILE
+from contactlookup.models.contact import Contact
+from contactlookup.services.file_data_store_service import (
     ContactBST,
     ContactNode,
     FileDataStoreService,

@@ -2,7 +2,7 @@
 import logging.config
 from pathlib import Path
 
-from contact_lookup.definitions import LOGGING_CONFIG_PATH
+from contactlookup.definitions import LOGGING_CONFIG_PATH
 
 # homepath = $HOME
 HOMEPATH = str(Path.home())

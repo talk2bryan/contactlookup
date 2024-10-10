@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from contact_lookup.models.contact import Contact
+from contactlookup.models.contact import Contact
 
 
 class DataStoreService(ABC):

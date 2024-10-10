@@ -28,12 +28,12 @@ from pathlib import Path
 
 import vobject
 
-from contact_lookup.definitions import VCF_EXTENSION
-from contact_lookup.models.address import Address
-from contact_lookup.models.contact import Contact
-from contact_lookup.models.email import Email
-from contact_lookup.models.phone_number import PhoneNumber
-from contact_lookup.services.data_store_service import DataStoreService
+from contactlookup.definitions import VCF_EXTENSION
+from contactlookup.models.address import Address
+from contactlookup.models.contact import Contact
+from contactlookup.models.email import Email
+from contactlookup.models.phone_number import PhoneNumber
+from contactlookup.services.data_store_service import DataStoreService
 
 
 class ContactNode:

@@ -1,9 +1,9 @@
 # A VCF contact model
 from dataclasses import dataclass, field
 
-from contact_lookup.models.address import Address
-from contact_lookup.models.email import Email
-from contact_lookup.models.phone_number import PhoneNumber
+from contactlookup.models.address import Address
+from contactlookup.models.email import Email
+from contactlookup.models.phone_number import PhoneNumber
 
 
 @dataclass

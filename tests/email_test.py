@@ -2,7 +2,7 @@
 
 import pytest
 
-from contact_lookup.models.email import Email
+from contactlookup.models.email import Email
 
 # Constants
 EMAIL = "hello@world.org"

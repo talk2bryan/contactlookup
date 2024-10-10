@@ -1,18 +1,18 @@
 [tool.poetry]
 name = "contactlookup"
-version = "0.1.0"
+version = "0.2.0"
 description = "self-contained contacts API for searching through VCF for contact records"
 authors = ["Bryan Wodi <pypi.envy443@dralias.com>"]
 license = "GNU GPL v3.0"
 readme = "README.md"
-packages = [{include = "contact_lookup"}]
+packages = [{include = "contactlookup"}]
 include = [
     {path = "tests/data", format = ["sdist", "wheel"]},
     {path = "tests", format = ["sdist"]},
 ]
 
 [tool.poetry.scripts]
-contactlookup = "contact_lookup.__main__:main"
+contactlookup = "contactlookup.__main__:cli"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/talk2bryan/contactlookup/issues"
@@ -20,6 +20,8 @@ contactlookup = "contact_lookup.__main__:main"
 [tool.poetry.dependencies]
 python = "^3.10"
 vobject = "^0.9.8"
+fastapi = {extras = ["standard"], version = "^0.115.0"}
+fire = "^0.7.0"
 
 
 [tool.poetry.group.dev.dependencies]
