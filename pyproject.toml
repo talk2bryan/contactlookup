@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "contactlookup"
-version = "1.0.0"
+version = "1.0.1"
 description = "self-contained contacts API for searching through VCF for contact records"
 authors = ["Bryan Wodi <pypi.envy443@dralias.com>"]
 license = "GNU GPL v3.0"
@@ -28,6 +28,7 @@ fire = "^0.7.0"
 pytest = "^8.3.2"
 pre-commit = "^3.8.0"
 pytest-datafiles = "^3.0.0"
+pytest-cov = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

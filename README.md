@@ -1,3 +1,11 @@
+[![buildstatus](https://github.com/talk2bryan/contactlookup/actions/workflows/ci.yml/badge.svg)](https://github.com/talk2bryan/contactlookup/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/talk2bryan/contactlookup/graph/badge.svg?token=IHS7IJ3RPN)](https://codecov.io/gh/talk2bryan/contactlookup)
+[![PyPI version](https://badge.fury.io/py/contactlookup.svg)](https://badge.fury.io/py/contactlookup)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/contactlookup)](https://pypi.org/project/contactlookup/)
+[![PyPI - License](https://img.shields.io/pypi/l/contactlookup)](https://pypi.org/project/contactlookup/)
+[![PyPI - Format](https://img.shields.io/pypi/format/contactlookup)](https://pypi.org/project/contactlookup/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/contactlookup)](https://pypi.org/project/contactlookup/)
+
 # contactlookup
 Self hosted contacts API for searching through a VCF file for contact records
 
