@@ -2,7 +2,8 @@ name: Publish Python distribution to PyPI and TestPyPI
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - "v.*.*"
 jobs:
     build:
       name: Build distribution
@@ -77,7 +78,7 @@ jobs:
           gh release create
           '${{ github.ref_name }}'
           --repo '${{ github.repository }}'
-          --notes ""
+          --notes "Release for version ${{ github.ref_name }}"
       - name: Upload artifact signatures to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
