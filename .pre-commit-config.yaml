@@ -72,3 +72,22 @@ repos:
         files: ^tests/.*\.py$
         exclude: ^tests/conftest\.py$
         exclude_types: [yaml, toml, json]
+      - id: pytest-cov
+        name: pytest-cov
+        entry: pytest
+        language: python
+        types: [python]
+        pass_filenames: false
+        stages: [commit, push]
+        args: [--cov=contactlookup, --cov-report=term-missing]
+        always_run: true
+        verbose: true
+        require_serial: true
+        additional_dependencies:
+          [pytest, pytest-cov, pytest-datafiles, vobject, fire]
+        description: Run pytest with coverage
+        files: ^tests/.*\.py$
+        exclude: |-
+          ^tests/conftest\.py$
+          ^tests/test_.*\.py$
+        exclude_types: [yaml, toml, json]
