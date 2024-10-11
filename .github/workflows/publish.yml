@@ -27,6 +27,10 @@ jobs:
         with:
             name: python-package-distributions
             path: dist/
+      - name: Print the distribution files
+        run: ls dist/
+      - name: Print the ref name
+        run: echo ${{ github.ref_name }}
     publish-to-pypi:
         name: >-
             Publish Python distribution to PyPI
