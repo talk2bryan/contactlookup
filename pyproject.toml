@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "contactlookup"
-version = "1.0.1"
+version = "1.0.2"
 description = "self-contained contacts API for searching through VCF for contact records"
 authors = ["Bryan Wodi <pypi.envy443@dralias.com>"]
 license = "GNU GPL v3.0"
