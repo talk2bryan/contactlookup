@@ -67,7 +67,7 @@ repos:
         always_run: true
         verbose: true
         require_serial: true
-        additional_dependencies: [pytest]
+        additional_dependencies: [pytest, pytest-datafiles, vobject]
         description: Run pytest
         files: ^tests/.*\.py$
         exclude: ^tests/conftest\.py$
