@@ -38,3 +38,5 @@ jobs:
         verbose: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Print the ref
+      run: echo ${{ github.ref }}
