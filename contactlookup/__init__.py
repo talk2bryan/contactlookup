@@ -13,10 +13,13 @@ if _default_log_dir.exists():
 else:
     LOG_DIR = Path.home()
 
+# Convert the log_file_path to raw string for Windows compatibility.
+log_file_str = str(LOG_DIR / APP_LOG_FILENAME).replace("\\", "\\\\")
+
 logging.config.fileConfig(
     fname=LOGGING_CONFIG_PATH,
     disable_existing_loggers=False,
-    defaults={"log_file": str(LOG_DIR / APP_LOG_FILENAME)},
+    defaults={"log_file": log_file_str},
 )
 logger = logging.getLogger(__name__)
 logger.info("Logger initialized")
