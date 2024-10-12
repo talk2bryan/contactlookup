@@ -24,6 +24,27 @@ pipenv install contactlookup
 ```
 
 ## Quick Start
+### Running as a Docker container
+Serve the contacts in the accompanying contacts.vcf file:
+```bash
+docker build -t contactlookup .
+docker run -p 8000:8000 contactlookup # This uses the contacts.vcf file in the container
+# Daemonize the container
+docker run -d -p 8000:8000 contactlookup
+```
+If you want to use a different VCF file, you can mount it as a volume:
+```bash
+docker run -d -p 8000:8000 -v /path/to/contacts.vcf:/app/contacts.vcf contactlookup
+```
+:warning: The VCF file must be mounted at `/app/contacts.vcf` in the container.
+
+To stop the container:
+```bash
+docker ps # Get the container ID
+docker stop <container_id>
+```
+
+### Running as a CLI application
 As a script:
 ```bash
 contactlookup --help
@@ -36,21 +57,18 @@ As a module:
 python -m contactlookup --help
 ```
 
-## Examples
-### Start and stop the API server
-```bash
-contactlookup -f /path/to/contacts.vcf # API is now running
-```
-Kill the server with `Ctrl+C`
+### Using the API
+You can search for contacts by
+- first name,
+- phone number, or
+- email address.
 
-### Search for contacts
-You can search for contacts by first name, phone number, or email address. The
-search is case-insensitive. Partial matches are not yet supported.
-
+The search is case-insensitive. _Partial matches are not yet supported_.
 #### Search using web browser
-Open your web browser and navigate to `http://localhost:8000/docs` to see the API documentation.
+Open your web browser and navigate to `http://localhost:8000/docs` to see the
+API documentation. Depending on your setup, you may need to replace `localhost`.
 
-#### Search using curl
+### Search using curl
 ##### Search by email
 ```bash
 curl -X 'GET' \
