@@ -1,15 +1,5 @@
-# Initialize logger
-import logging.config
-from pathlib import Path
+"""Initialize logger"""
 
-from contactlookup.definitions import LOGGING_CONFIG_PATH
+from contactlookup.utils import initialize_application_logger
 
-# homepath = $HOME
-HOMEPATH = str(Path.home())
-logging.config.fileConfig(
-    fname=LOGGING_CONFIG_PATH,
-    disable_existing_loggers=False,
-    defaults={"log_dir": HOMEPATH},
-)
-logger = logging.getLogger(__name__)
-logger.info("Logger initialized")
+initialize_application_logger()

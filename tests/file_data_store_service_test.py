@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from contactlookup.definitions import SAMPLE_CONTACTS_DIR, SAMPLE_CONTACTS_FILE
@@ -7,6 +9,7 @@ from contactlookup.services.file_data_store_service import (
     ContactNode,
     FileDataStoreService,
 )
+from contactlookup.utils import split_unix_path_string
 
 
 def test_contact_node_one_contact():
@@ -162,8 +165,10 @@ def test_contact_bst_insert_same_fname():
 
 @pytest.mark.datafiles(SAMPLE_CONTACTS_DIR)
 def test_file_data_store_service_load_contacts(datafiles):
+    dir_paths = split_unix_path_string(str(datafiles))
+    contacts_file_path = Path("/".join(dir_paths)) / SAMPLE_CONTACTS_FILE
     service = FileDataStoreService()
-    service.set_contacts_file_path(datafiles / SAMPLE_CONTACTS_FILE)
+    service.set_contacts_file_path(contacts_file_path)
 
     success = service.initialize()
     assert success is True
