@@ -17,6 +17,7 @@ from contactlookup.definitions import (
 )
 from contactlookup.services.data_store_service import DataStoreService
 from contactlookup.services.file_data_store_service import FileDataStoreService
+from contactlookup.utils import split_unix_path_string
 
 
 def _load_contacts_file(service: FileDataStoreService, contacts_file_path: str | None):
@@ -24,6 +25,7 @@ def _load_contacts_file(service: FileDataStoreService, contacts_file_path: str |
     # If no file is provided by the user, use the default contacts file:
     # SAMPLE_CONTACTS_DIR/SAMPLE_CONTACTS_FILE in the tests directory.
     logger = logging.getLogger(__name__)
+    contacts_file: Path | None = None
     if not contacts_file_path:
         print("No contacts file provided.")
         logger.info("No contacts file provided. Using default contacts file.")
@@ -34,22 +36,26 @@ def _load_contacts_file(service: FileDataStoreService, contacts_file_path: str |
             # First check for tests/data/contacts.vcf in root's directory.
             # If we are developing the package, the contacts file will be in
             # ROOT_DIR/../tests/data/contacts.vcf
-            development_contacts_file_path = (
-                ROOT_DIR.parent / SAMPLE_CONTACTS_DIR / SAMPLE_CONTACTS_FILE
-            )
+            base_path = ROOT_DIR.parent
+
+            # To support Windows, we need to split the Unix path string into a
+            # list of path components.
+            sample_contacts_dir_parts = split_unix_path_string(SAMPLE_CONTACTS_DIR)
+            base_path = base_path / Path("/".join(sample_contacts_dir_parts))
+            development_contacts_file_path = base_path / SAMPLE_CONTACTS_FILE
 
             if development_contacts_file_path.exists():
-                contacts_file_path = str(development_contacts_file_path)
+                contacts_file = development_contacts_file_path
                 logger.info("Application is in development mode.")
             else:
                 # We are not developing the package. The contacts file will be
                 # in the site-packages directory.
                 # Check for tests/data/contacts.vcf in the site-packages directory
                 site_packages_dir = Path(site.getsitepackages()[0])
-
-                contacts_file_path = (
-                    f"{site_packages_dir}/{SAMPLE_CONTACTS_DIR}/{SAMPLE_CONTACTS_FILE}"
+                base_path = site_packages_dir / Path(
+                    "/".join(sample_contacts_dir_parts),
                 )
+                contacts_file = base_path / SAMPLE_CONTACTS_FILE
                 logger.info("Application is in production mode.")
             print(f"Using default contacts file: {contacts_file_path}")
         except ImportError as e:
@@ -63,9 +69,9 @@ def _load_contacts_file(service: FileDataStoreService, contacts_file_path: str |
             )
             logger.error("_load_contacts_file|Stack trace: %s", stack_trace)
             return
-
-    contacts_file_path = contacts_file_path.strip()
-    contacts_file = Path(contacts_file_path)
+    else:
+        # If the user provides a contacts file, use it.
+        contacts_file = Path(contacts_file_path.strip())
 
     service.set_contacts_file_path(contacts_file)
 
@@ -96,6 +102,7 @@ def _setup(
     else:
         # Not implemented databaseconnection. Would require a database connection.
         print("Invalid data store service. Using FileDataStoreService")
+        print(f"data_store_service: {data_store_service}")
         data_store_service = FILE_DATA_STORE_SERVICE
 
     service = FileDataStoreService()
@@ -132,9 +139,15 @@ def main(service: str | None = FILE_DATA_STORE_SERVICE, file: str | None = None)
 
     app_controller.set_data_store_service(data_store_service)
 
-    logger.info("Running FastAPI application")
     # Run the FastAPI application
-    uvicorn.run(app_controller.app)
+    try:
+        logger.info("Starting FastAPI application")
+        uvicorn.run(app_controller.app, host="0.0.0.0", port=8000)
+    except Exception as e:
+        logger.error("Error starting FastAPI application: %s", e)
+        print(f"Error starting FastAPI application: {e}")
+        stack_trace = traceback.format_exc()
+        logger.error("Stack trace: %s", stack_trace)
 
 
 if __name__ == "__main__":
