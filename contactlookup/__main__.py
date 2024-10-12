@@ -72,6 +72,7 @@ def _load_contacts_file(service: FileDataStoreService, contacts_file_path: str |
     else:
         # If the user provides a contacts file, use it.
         contacts_file = Path(contacts_file_path.strip())
+        logger.info("Using contacts file: %s", contacts_file_path)
 
     service.set_contacts_file_path(contacts_file)
 
