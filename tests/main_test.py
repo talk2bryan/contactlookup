@@ -1,8 +1,15 @@
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
-from contactlookup.__main__ import _load_contacts_file
+from contactlookup.__main__ import (
+    _load_contacts_file,
+    _server_address,
+    _warn_if_exposed,
+)
 from contactlookup.definitions import (
+    API_KEY_ENV_VAR,
+    HOST_ENV_VAR,
+    PORT_ENV_VAR,
     ROOT_DIR,
     SAMPLE_CONTACTS_DIR,
     SAMPLE_CONTACTS_FILE,
@@ -78,3 +85,37 @@ def test_load_contacts_file_with_path(mock_print, mock_get_logger):
     # # Check if the contacts file was set to the provided path
     expected_path = Path(contacts_file_path)
     mock_service.set_contacts_file_path.assert_called_once_with(expected_path)
+
+
+def test_server_address_defaults(monkeypatch):
+    monkeypatch.delenv(HOST_ENV_VAR, raising=False)
+    monkeypatch.delenv(PORT_ENV_VAR, raising=False)
+    assert _server_address(None, None) == ("127.0.0.1", 8000)
+
+
+def test_server_address_from_env(monkeypatch):
+    monkeypatch.setenv(HOST_ENV_VAR, "0.0.0.0")
+    monkeypatch.setenv(PORT_ENV_VAR, "9000")
+    assert _server_address(None, None) == ("0.0.0.0", 9000)
+
+
+def test_server_address_args_win_over_env(monkeypatch):
+    monkeypatch.setenv(HOST_ENV_VAR, "0.0.0.0")
+    monkeypatch.setenv(PORT_ENV_VAR, "9000")
+    assert _server_address("127.0.0.1", 8080) == ("127.0.0.1", 8080)
+
+
+@patch("contactlookup.__main__.print")
+def test_warn_if_exposed_without_key(mock_print, monkeypatch):
+    monkeypatch.delenv(API_KEY_ENV_VAR, raising=False)
+    _warn_if_exposed("0.0.0.0")
+    assert mock_print.call_count == 1
+
+
+@patch("contactlookup.__main__.print")
+def test_no_warning_on_localhost_or_with_key(mock_print, monkeypatch):
+    monkeypatch.delenv(API_KEY_ENV_VAR, raising=False)
+    _warn_if_exposed("127.0.0.1")
+    monkeypatch.setenv(API_KEY_ENV_VAR, "s3cret")
+    _warn_if_exposed("0.0.0.0")
+    mock_print.assert_not_called()

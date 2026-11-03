@@ -1,6 +1,7 @@
 """Main module for the contactlookup package."""
 
 import logging
+import os
 import site
 import traceback
 from pathlib import Path
@@ -10,7 +11,12 @@ import uvicorn
 
 import contactlookup.controller as app_controller
 from contactlookup.definitions import (
+    API_KEY_ENV_VAR,
+    DEFAULT_HOST,
+    DEFAULT_PORT,
     FILE_DATA_STORE_SERVICE,
+    HOST_ENV_VAR,
+    PORT_ENV_VAR,
     ROOT_DIR,
     SAMPLE_CONTACTS_DIR,
     SAMPLE_CONTACTS_FILE,
@@ -121,13 +127,40 @@ def cli():
     fire.Fire(main)
 
 
-def main(service: str | None = FILE_DATA_STORE_SERVICE, file: str | None = None):
+def _server_address(host: str | None, port: int | None) -> tuple[str, int]:
+    """Resolve host and port: CLI argument, then environment variable, then default."""
+    host = host or os.environ.get(HOST_ENV_VAR) or DEFAULT_HOST
+    port = int(port or os.environ.get(PORT_ENV_VAR) or DEFAULT_PORT)
+    return host, port
+
+
+def _warn_if_exposed(host: str):
+    """Warn when the API is reachable from other machines without an API key."""
+    if os.environ.get(API_KEY_ENV_VAR) or host in ("127.0.0.1", "localhost", "::1"):
+        return
+    msg = (
+        f"WARNING: listening on {host} with no API key. Anyone who can reach "
+        f"this port can read every contact. Set {API_KEY_ENV_VAR} to require one."
+    )
+    print(msg)
+    logging.getLogger(__name__).warning(msg)
+
+
+def main(
+    service: str | None = FILE_DATA_STORE_SERVICE,
+    file: str | None = None,
+    host: str | None = None,
+    port: int | None = None,
+):
     """Expose API to query contacts.
 
     Args:
         service (str | None, optional): The data store service to use. Defaults to FILE_DATA_STORE_SERVICE.
         file (str | None, optional): The path to the contacts file. Defaults to None.
+        host (str | None, optional): Address to listen on. Defaults to $CONTACTLOOKUP_HOST, else 127.0.0.1.
+        port (int | None, optional): Port to listen on. Defaults to $CONTACTLOOKUP_PORT, else 8000.
     """
+    host, port = _server_address(host, port)
     data_store_service = _setup(data_store_service=service, contacts_file_path=file)
     if not data_store_service:
         return
@@ -139,11 +172,12 @@ def main(service: str | None = FILE_DATA_STORE_SERVICE, file: str | None = None)
     print("Data store service initialized")
 
     app_controller.set_data_store_service(data_store_service)
+    _warn_if_exposed(host)
 
     # Run the FastAPI application
     try:
-        logger.info("Starting FastAPI application")
-        uvicorn.run(app_controller.app, host="0.0.0.0", port=8000)
+        logger.info("Starting FastAPI application on %s:%s", host, port)
+        uvicorn.run(app_controller.app, host=host, port=port)
     except Exception as e:
         logger.error("Error starting FastAPI application: %s", e)
         print(f"Error starting FastAPI application: {e}")
