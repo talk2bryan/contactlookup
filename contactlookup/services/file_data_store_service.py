@@ -342,6 +342,8 @@ class FileDataStoreService(DataStoreService):
         except AssertionError as e:
             logger.error("initialize|Error: %s", e)
             return success
+        # IDs double as indexes into all_contacts, so restart them for every load
+        type(self).contact_id = 0
         contacts = self.read_vcf_file(file_path=self._contacts_file_path, logger=logger)
         if not contacts:
             logger.error("initialize|No contacts read.")
