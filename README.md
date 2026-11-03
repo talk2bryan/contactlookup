@@ -24,19 +24,35 @@ pipenv install contactlookup
 ```
 
 ## Quick Start
+> [!WARNING]
+> The API returns your whole address book to anyone who can reach it. Keep it
+> on localhost, or set an API key (see [Configuration](#configuration)) before
+> exposing it to your network.
+
 ### Running as a Docker container
-Serve the contacts in the accompanying contacts.vcf file:
+Serve the contacts in the accompanying sample contacts.vcf file:
 ```bash
 docker build -t contactlookup .
-docker run -p 8000:8000 contactlookup # This uses the contacts.vcf file in the container
+docker run -p 127.0.0.1:8000:8000 contactlookup
 # Daemonize the container
-docker run -d -p 8000:8000 contactlookup
+docker run -d -p 127.0.0.1:8000:8000 contactlookup
 ```
-If you want to use a different VCF file, you can mount it as a volume:
+To serve your own VCF file, mount it at `/app/contacts.vcf`. Mounting it
+read-only is a good idea:
 ```bash
-docker run -d -p 8000:8000 -v /path/to/contacts.vcf:/app/contacts.vcf contactlookup
+docker run -d -p 127.0.0.1:8000:8000 \
+  -v /path/to/contacts.vcf:/app/contacts.vcf:ro \
+  contactlookup
 ```
-:warning: The VCF file must be mounted at `/app/contacts.vcf` in the container.
+To make it reachable from other machines, publish the port on all interfaces
+and require an API key:
+```bash
+docker run -d -p 8000:8000 \
+  -e CONTACTLOOKUP_API_KEY="$(openssl rand -hex 32)" \
+  -v /path/to/contacts.vcf:/app/contacts.vcf:ro \
+  contactlookup
+```
+The image runs as a non-root user and has a health check on `/health`.
 
 To stop the container:
 ```bash
@@ -50,7 +66,33 @@ As a script:
 contactlookup --help
 contactlookup # Start the API server, and serve the contacts in the accompanying contacts.vcf file
 contactlookup -f /path/to/contacts.vcf # Start the API server, and serve the contacts in the VCF file
+contactlookup -f /path/to/contacts.vcf --host 0.0.0.0 --port 9000 # listen on all interfaces, port 9000
 ```
+The CLI listens on `127.0.0.1:8000` by default.
+
+### Configuration
+| Setting | CLI flag | Environment variable | Default |
+|---|---|---|---|
+| Address to listen on | `--host` | `CONTACTLOOKUP_HOST` | `127.0.0.1` (`0.0.0.0` in Docker) |
+| Port | `--port` | `CONTACTLOOKUP_PORT` | `8000` |
+| API key | | `CONTACTLOOKUP_API_KEY` | none (API is open) |
+
+When `CONTACTLOOKUP_API_KEY` is set, every `/contacts` request needs an
+`X-API-Key` header:
+```bash
+curl -H "X-API-Key: $CONTACTLOOKUP_API_KEY" http://localhost:8000/contacts/fname/jeff
+```
+`/`, `/health` and `/docs` stay open. The key is left out of the CLI flags on
+purpose, so it doesn't show up in your shell history or `ps`. If you listen on
+anything other than localhost without a key, the app prints a warning at
+startup.
+
+### Responses
+- `200` with `{"contacts": [...]}` for searches, which is an empty list when
+  nothing matches
+- `404` for `/contacts/{id}` when there's no contact with that id
+- `401` when an API key is configured and the header is missing or wrong
+- `503` while the contacts aren't loaded yet
 
 As a module:
 ```bash
