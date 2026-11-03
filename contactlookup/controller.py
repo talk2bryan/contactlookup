@@ -1,11 +1,18 @@
 """Controller for the contactlookup app."""
 
-from fastapi import FastAPI
+import os
+import secrets
 
+from fastapi import APIRouter, FastAPI, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
+
+from contactlookup.definitions import API_KEY_ENV_VAR, API_KEY_HEADER
 from contactlookup.services.data_store_service import DataStoreService
 
 app = FastAPI()
 service: DataStoreService | None = None
+
+api_key_header = APIKeyHeader(name=API_KEY_HEADER, auto_error=False)
 
 
 def set_data_store_service(data_store_service: DataStoreService):
@@ -22,6 +29,32 @@ def set_data_store_service(data_store_service: DataStoreService):
     service = data_store_service
 
 
+def require_api_key(api_key: str | None = Security(api_key_header)):
+    """Check the X-API-Key header against CONTACTLOOKUP_API_KEY.
+
+    If CONTACTLOOKUP_API_KEY is not set, the API is open to anyone who can
+    reach it.
+    """
+    expected = os.environ.get(API_KEY_ENV_VAR)
+    if not expected:
+        return
+    if not api_key or not secrets.compare_digest(api_key.encode(), expected.encode()):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key",
+        )
+
+
+def get_service() -> DataStoreService:
+    """Return the data store service, or fail with 503 if it isn't set yet."""
+    if not service:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Data store service not set",
+        )
+    return service
+
+
 @app.get("/")
 def read_root():
     """Welcome message."""
@@ -29,64 +62,65 @@ def read_root():
     return {"message": msg}
 
 
-@app.get("/contacts")
+@app.get("/health")
+def health():
+    """Health check. Returns 503 until the contacts are loaded."""
+    get_service()
+    return {"status": "ok"}
+
+
+contacts_router = APIRouter(
+    prefix="/contacts",
+    dependencies=[Security(require_api_key)],
+)
+
+
+@contacts_router.get("")
 def read_contacts():
     """Get all contacts."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts()
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts()}
 
 
-@app.get("/contacts/{contact_id}")
+@contacts_router.get("/{contact_id}")
 def read_contact(contact_id: int):
     """Get contact by ID."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contact = service.get_contact(contact_id)
+    contact = get_service().get_contact(contact_id)
+    if contact is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No contact with id {contact_id}",
+        )
     return {"contact": contact}
 
 
-@app.get("/contacts/fname/{fname}")
+@contacts_router.get("/fname/{fname}")
 def read_contacts_by_fname(fname: str):
     """Get contacts by first name."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts_by_fname(fname)
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts_by_fname(fname)}
 
 
-@app.get("/contacts/phone/{phone_number}")
+@contacts_router.get("/phone/{phone_number}")
 def read_contacts_by_phone_number(phone_number: str):
     """Get contacts by phone number."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts_by_phone_number(phone_number)
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts_by_phone_number(phone_number)}
 
 
-@app.get("/contacts/email/{email}")
+@contacts_router.get("/email/{email}")
 def read_contacts_by_email(email: str):
     """Get contacts by email."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts_by_email(email)
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts_by_email(email)}
 
 
-@app.get("/contacts/country/{country}")
+@contacts_router.get("/country/{country}")
 def read_contacts_by_country(country: str):
     """Get contacts by country."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts_by_country(country)
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts_by_country(country)}
 
 
-@app.get("/contacts/state/{state}")
+@contacts_router.get("/state/{state}")
 def read_contacts_by_state(state: str):
     """Get contacts by state."""
-    if not service:
-        return {"Error": "Data store service not set"}
-    contacts = service.get_contacts_by_state(state)
-    return {"contacts": contacts}
+    return {"contacts": get_service().get_contacts_by_state(state)}
+
+
+app.include_router(contacts_router)

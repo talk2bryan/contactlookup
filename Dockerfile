@@ -1,50 +1,51 @@
-FROM python:3.10 AS base
-ENV PYTHONFAULTHANDLER=1 \
-    PYTHONHASHSEED=random \
-    PYTHONUNBUFFERED=1 \
-    PIP_DEFAULT_TIMEOUT=100 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+# Build stage: build the wheel and pin dependencies from poetry.lock
+FROM python:3.11-slim AS build
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
 
-WORKDIR /app
+WORKDIR /src
+RUN pip install poetry poetry-plugin-export
 
-# Install pip and poetry
-RUN python -m pip install --upgrade pip && \
-    pip install poetry
-
-# Create a virtual environment
-RUN python -m venv /venv
-
-# Copy the project files
 COPY pyproject.toml poetry.lock README.md ./
+# --without-hashes: export leaves uvloop out of this lock file, and pip's hash
+# mode refuses to install anything not listed (uvicorn[standard] pulls it in)
+RUN poetry export --without dev --without-hashes -f requirements.txt -o requirements.txt
 
-# Install wheel
-RUN pip install wheel
+COPY contactlookup ./contactlookup
+COPY tests/data ./tests/data
+RUN poetry build -f wheel
 
-# Install dependencies
-RUN poetry export -f requirements.txt | pip install -r /dev/stdin
 
-# Copy the rest of the project files
-COPY . .
+# Runtime stage: just the app, no poetry, running as a normal user
+FROM python:3.11-slim
+LABEL org.opencontainers.image.title="contactlookup" \
+      org.opencontainers.image.description="Self-hosted contacts API for searching a VCF file" \
+      org.opencontainers.image.authors="Bryan Wodi" \
+      org.opencontainers.image.source="https://github.com/talk2bryan/contactlookup" \
+      org.opencontainers.image.licenses="GPL-3.0"
 
-# Build and install the wheel
-RUN poetry build -f wheel && /venv/bin/pip install dist/*.whl
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    CONTACTLOOKUP_HOST=0.0.0.0 \
+    CONTACTLOOKUP_PORT=8000
 
-# Place the contacts.vcf file in the /app directory
-RUN cp /venv/lib/python3.10/site-packages/tests/data/contactlookup_sample_contacts.vcf \
-    /app/contacts.vcf
+COPY --from=build /src/requirements.txt /src/dist/*.whl /tmp/
+RUN pip install -r /tmp/requirements.txt \
+    && pip install --no-deps /tmp/*.whl \
+    && rm -rf /tmp/* \
+    # the wheel ships the sample data as a top-level "tests" package; drop it
+    && rm -rf "$(python -c 'import site; print(site.getsitepackages()[0])')/tests"
 
-# Remove everything except the run.sh file and the contacts.vcf file
-RUN rm -rf contactlookup \
-    pyproject.toml \
-    poetry.lock \
-    README.md \
-    tests \
-    dist
+# /app holds the contacts file and the log file, so the app user needs to own it
+RUN useradd --uid 10001 --create-home app && mkdir /app && chown app:app /app
+WORKDIR /app
+COPY --from=build --chown=app:app /src/tests/data/contactlookup_sample_contacts.vcf /app/contacts.vcf
 
-# Remove the installed tests directory
-RUN rm -rf /venv/lib/python3.10/site-packages/tests
+USER app
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"
 
-# Run the application with the contacts.vcf file as the default argument
-ENV PATH="/venv/bin:${PATH}"
-CMD ["contactlookup", "-f", "contacts.vcf"]
+CMD ["contactlookup", "--file", "/app/contacts.vcf"]
